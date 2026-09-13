@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tcvn5574"
+version = "1.0.0"
+description = "Python calculation engine for reinforced concrete beams, columns and walls according to TCVN 5574-2018"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "concreteproperties>=0.8,<0.9",
+    "fpdf2>=2.7,<3",
+]
+
+[project.optional-dependencies]
+# Kept as compatibility aliases for existing installation commands.  The
+# packages are runtime dependencies now and are installed by `pip install .`.
+report = ["fpdf2>=2.7,<3"]
+nonlinear = ["concreteproperties>=0.8,<0.9"]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+include = ["tcvn5574*"]
+exclude = ["tests*", "graft*"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-p no:cacheprovider"

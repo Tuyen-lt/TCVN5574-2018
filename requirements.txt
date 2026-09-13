@@ -1,0 +1,6 @@
+# Runtime dependencies (normally installed automatically by `pip install .`)
+concreteproperties>=0.8,<0.9
+fpdf2>=2.7,<3
+
+# Test dependency
+pytest>=7
