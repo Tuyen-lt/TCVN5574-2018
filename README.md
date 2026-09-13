@@ -25,7 +25,7 @@ Formulas follow the code text (clause / formula numbers noted in the source). Wo
 
 ### 1. Requirements
 
-Install [Python 3.12 or newer](https://www.python.org/downloads/) and Git. Check that Python is available:
+Install [Python 3.12 or newer](https://www.python.org/downloads/). Check that Python is available:
 
 ```bash
 python --version
@@ -35,13 +35,17 @@ On Windows, if `python` is not recognized, use `py -3.12` instead of `python` in
 
 ### 2. Install the library
 
-To install the released version directly from GitHub:
+If you only want to use the library, run this one command. `pip` downloads version 1.0.0 from GitHub and installs all required dependencies automatically:
 
 ```bash
-python -m pip install "tcvn5574 @ git+https://github.com/Tuyen-lt/TCVN5574-2018.git@v1.0.0"
+python -m pip install "tcvn5574 @ https://github.com/Tuyen-lt/TCVN5574-2018/archive/refs/tags/v1.0.0.zip"
 ```
 
-Alternatively, clone the repository and install it from the downloaded folder:
+You do **not** need to download the ZIP manually, use `git clone`, or use `cd` for normal installation.
+
+#### Optional: install from downloaded source code
+
+This method is only needed if you want to read, modify or contribute to the source code. First install [Git](https://git-scm.com/downloads), then run:
 
 ```bash
 git clone https://github.com/Tuyen-lt/TCVN5574-2018.git
@@ -49,7 +53,11 @@ cd TCVN5574-2018
 python -m pip install .
 ```
 
-The final dot (`.`) means “install the Python project in the current folder”. `pip` also installs required dependencies such as `concreteproperties` and `fpdf2` automatically.
+- `git clone ...` downloads a copy of the complete source-code repository into a new folder named `TCVN5574-2018`.
+- `cd TCVN5574-2018` moves the terminal into that new folder. `cd` means **change directory**; it does not download or install anything.
+- `python -m pip install .` installs the project found in the current folder. The final dot (`.`) means **this folder**.
+
+If the terminal is already inside `TCVN5574-2018`, do not run `cd TCVN5574-2018` again. You can check the current folder with `pwd` on macOS/Linux or `Get-Location` in Windows PowerShell.
 
 ### 3. Basic usage
 
@@ -149,6 +157,8 @@ python -m pytest -q
 
 Command explanation:
 
+- `git clone` downloads the source because tests are part of the source repository, not the installed library.
+- `cd TCVN5574-2018` enters the downloaded folder so the following commands can find `pyproject.toml` and `tests/`.
 - `-e` installs the library in editable mode, so source-code changes take effect without reinstalling it.
 - `.[dev]` installs the current project plus development tools such as `pytest`.
 - `pytest -q` runs all tests and prints a compact result.
