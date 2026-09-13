@@ -9,53 +9,15 @@ Formulas follow the code text (clause / formula numbers noted in the source). Wo
 
 ## Features
 
-1. **Materials (`tcvn5574.materials`)**
-   - Heavy concrete B3.5–B60: $R_b, R_{bt}$ (Bảng 7), $R_{b,ser}, R_{bt,ser}$ (Bảng 6), $E_b$ (Bảng 10), creep $\varphi_{b,cr}$ (Bảng 11), long-term $\varepsilon_{b1,red}$ (Bảng 9). B22.5 is interpolated (not in the 2018 tables).
-   - Rebar CB240-T, CB300-T/V, CB400-V, CB500-V (Bảng 13, 14), $E_s = 2.0\cdot10^5$ MPa. SD/SR/A-* grades are legacy.
-
-2. **Flexure (`tcvn5574.flexure`, 8.1.2)**
-   - $\xi_R = 0.8/(1+\varepsilon_{s,el}/\varepsilon_{b2})$; singly / doubly reinforced design; capacity check with $x = \xi_R h_0$ when over-reinforced (8.1.2.3.5).
-   - T-sections with flange in compression (CT 36–38) in both design (`bf_mm`, `hf_mm`) and check (`RectangularBeamSection(bf=, hf=)`).
-
-3. **Shear (`tcvn5574.shear`, 8.1.3)**
-   - $Q \le 0.3 R_b b h_0$ (CT 88).
-   - $Q \le \min_C (Q_b + Q_{sw} + q_1 C)$; $Q_b = 1.5 R_{bt} b h_0^2/C \in [0.5; 2.5] R_{bt} b h_0$ (CT 90), CT (97) when $q_{sw} < 0.25 R_{bt} b$; $Q_{sw} = 0.75 q_{sw} C$, $C \in [h_0; 2h_0]$ (CT 91). Optional $q_1$ (distributed load on the inclined section) and `a_load_mm` (distance to the first concentrated load).
-   - $s_{w,max} = R_{bt} b h_0^2/Q$ (CT 98); constructive $\le 0.5h_0, 300$ / $\le 0.75h_0, 500$ mm (10.3.4.3).
-   - Hanging stirrups at secondary beam supports: $\Sigma R_{sw} A_{sw} \ge P$.
-
-4. **Torsion (`tcvn5574.torsion`, 8.1.4)**
-   - $T \le 0.1 R_b b^2 h$ (CT 102), $T/T_0 + Q/Q_0 \le 1$ between spatial sections (8.1.4.4.1).
-   - Spatial sections (bottom, top, side faces): $T_0 = \min_C (0.9 q_{sw,1}\delta C Z_2 + 0.9 R_s A_{s,1} Z_1 Z_2/C)$, ratio $q_{sw,1}Z_1/(R_s A_{s,1})$ limited to 0.5–1.5 (CT 103–110).
-   - $(T/T_0)^2 + (M/M_0)^2 \le 1$ (CT 114), $T/T_0 + Q/Q_0 \le 1$ (CT 115) for $M_3, V_2, M_2, V_3$.
-
-5. **Serviceability (`tcvn5574.sls`, 8.2)**
-   - $M_{crc} = R_{bt,ser} W_{pl}$, $W_{pl} = 1.3 W_{red}$ (CT 158–163).
-   - $a_{crc,i} = \varphi_1\varphi_2\varphi_3\psi_s \sigma_s L_s/E_s$ with $\sigma_s = M(h_0-x)\alpha_{s1}/I_{red}$, $\varepsilon_{b1,red} = 0.0015$ (CT 166–176); $a_{crc} = a_{crc,1}+a_{crc,2}-a_{crc,3}$; default limits 0.4 / 0.3 mm (Bảng 17).
-   - Curvature: uncracked $D = E_{b1} I_{red}$, $E_{b1} = 0.85E_b$ or $E_b/(1+\varphi_{b,cr})$; cracked $D = E_{b,red} I_{red}$, $\alpha_{s2} = E_{s,red}/E_{b,red}$ (CT 185–204). $f = s L^2 (1/r)$ with $(1/r) = (1/r)_1-(1/r)_2+(1/r)_3$.
-
-6. **Detailing (`tcvn5574.detailing`, 10.3.5–10.3.6)**
-   - $l_{0,an} = R_s A_s/(R_{bond} u_s)$, $R_{bond} = \eta_1\eta_2 R_{bt}$.
-   - $l_{an} = \alpha_1 l_{0,an} A_{s,cal}/A_{s,ef} \ge \max(0.3 l_{0,an}, 15d_s, 200)$, $\alpha_1$ = 1.0 tension / 0.75 compression.
-   - $l_{lap} = \alpha_2 l_{0,an} A_{s,cal}/A_{s,ef} \ge \max(0.4\alpha_2 l_{0,an}, 20d_s, 250)$; $\alpha_2$ = 1.2→2.0 (tension), 0.9→1.2 (compression) between 50 % (25 % plain bars) and 100 % spliced.
-
-7. **Nonlinear deformation model (`tcvn5574.nonlinear`, 8.1.2.7)** — `TCVN5574` design code for
-   [concreteproperties](https://github.com/robbievanleeuwen/concrete-properties) (installed automatically):
-   - Concrete three-linear (default) / two-linear diagrams (6.1.4, CT 8-13), long-term strains from Bảng 9; steel two-linear with Rs / Rsc, $\varepsilon_{s,u} = 0.025$.
-   - Failure criteria CT (70), (71): $\varepsilon_{b,max} = \varepsilon_{b2}$ or $\varepsilon_{s,max} = 0.025$ (steel-governed sections handled); one-sign strain diagrams use $\varepsilon_{b,u} = \varepsilon_{b2} - (\varepsilon_{b2} - \varepsilon_{b0})\varepsilon_1/\varepsilon_2$ (CT 86), so the M-N diagram is correct up to the squash load.
-   - Ultimate bending with N, M-N interaction, biaxial bending, and everything else of concreteproperties (moment-curvature, stresses) on arbitrary sections.
-   - `to_concrete_section(section, "B25", "CB400-V")` converts a `RectangularBeamSection` (incl. T flange).
-
-8. **Columns — eccentric compression (`tcvn5574.column`, 8.1.2.4)**
-   - Random eccentricity $e_a = \max(l/600, h/30, 10)$ and $e_0$ for statically indeterminate / determinate members (8.1.2.2.4).
-   - Slenderness: $\eta = 1/(1 - N/N_{cr})$, $N_{cr} = \pi^2 D/L_0^2$, $D = k_b E_b I + 0.7 E_s I_s$, $k_b = 0.15/(\varphi_L(0.3+\delta_e))$ (CT 44–48), ignored for $L_0/i \le 14$.
-   - Limit-force method: $N e \le R_b b x (h_0 - 0.5x) + R_{sc} A'_s (h_0 - a')$ with large (CT 42) / small (CT 43) eccentricity; $x < 2a'$ by moments about $A'_s$.
-   - `design_column_symmetric(...)`: required $A_s = A'_s$.
-   - `nonlinear=True`: the same $\eta$, then the point $(N, N\eta e_0)$ is checked inside the nonlinear M–N envelope.
-   - Concentric compression (8.1.2.4.3, $e_0 \le h/30$, $L_0/h \le 20$): `check_column_axial` / `design_column_axial`, $N_u = \varphi(R_b A + R_{sc} A_{s,tot})$, $\varphi$ from Bảng 16 (long-term) or $0.95 - 0.005 L_0/h$ (short-term); `nonlinear=True` gives the largest N with $(N, N e_a \eta)$ inside the nonlinear envelope.
-   - Biaxial eccentric compression (8.1.2.7.6): `check_column_biaxial(N, Mx, My, RectangularColumnSection.perimeter(...), ...)`. TCVN 5574:2018 allows only the nonlinear model here (no approximate formula), so `nonlinear=False` raises. $e_a$, $e_0$, $\eta$ per plane; the neutral-axis angle is solved so the capacity vector is parallel to $(M_x^*, M_y^*)$.
-   - Reports: `column_report`, `column_axial_report`, `column_biaxial_report` (section with skew neutral axis + $M_x$–$M_y$ contour at N).
-
-9. **Batch (`tcvn5574.batch`)**: envelope rows (Story, Beam, Loc, M, V) → required As and stirrup spacing.
+- **Materials:** concrete grades B3.5–B60 and common TCVN/legacy reinforcement grades.
+- **Beams:** flexural design and capacity checks for rectangular and T-sections, including singly and doubly reinforced sections.
+- **Shear and torsion:** stirrup design, section checks, combined actions and hanging reinforcement at secondary-beam supports.
+- **Serviceability:** crack-width, curvature and deflection checks for short- and long-term loading.
+- **Detailing:** anchorage and lap-splice length calculations.
+- **Columns:** axial, uniaxial eccentric and biaxial compression checks, including slenderness effects and symmetric reinforcement design.
+- **Walls:** analytical and fibre-based wall-section checks, shear and buckling utilities.
+- **Nonlinear analysis:** strain-compatible section analysis, moment–curvature response and interaction diagrams through `concreteproperties`.
+- **Reports and batch tools:** PDF calculation sheets plus batch processing of beam force envelopes.
 
 ---
 
