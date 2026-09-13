@@ -146,19 +146,34 @@ Fonts: DejaVu Sans (found in Windows Fonts; otherwise copy the TTFs into `tcvn55
 
 The library currently includes **112 automated tests** covering materials, beams, columns, walls, flexure, shear, torsion, serviceability, detailing, nonlinear analysis, batch processing and PDF reports. Results are cross-checked against TCVN 5574:2018 tables, published worked examples and independent numerical calculations.
 
-Run the test suite with:
+The `.whl` file is the installable library and does not contain the test suite. To run the tests without Git:
+
+1. Open the [v1.0.0 release](https://github.com/Tuyen-lt/TCVN5574-2018/releases/tag/v1.0.0).
+2. Under **Assets**, download **Source code (zip)** and extract it.
+3. Open PowerShell or Command Prompt.
+4. Move into the extracted folder. For example, if it was extracted into Windows Downloads, use one of these commands:
+
+```powershell
+# PowerShell
+cd "$HOME\Downloads\TCVN5574-2018-1.0.0"
+```
+
+```bat
+:: Command Prompt
+cd /d "%USERPROFILE%\Downloads\TCVN5574-2018-1.0.0"
+```
+
+Replace the path above if the ZIP was extracted somewhere else. `cd` means **change directory**: it tells the terminal to work inside the folder containing `pyproject.toml` and `tests`. Quotation marks are required when the path contains spaces.
+
+5. Install the library together with the testing tool, then run all tests:
 
 ```bash
-git clone https://github.com/Tuyen-lt/TCVN5574-2018.git
-cd TCVN5574-2018
 python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
 Command explanation:
 
-- `git clone` downloads the source because tests are part of the source repository, not the installed library.
-- `cd TCVN5574-2018` enters the downloaded folder so the following commands can find `pyproject.toml` and `tests/`.
 - `-e` installs the library in editable mode, so source-code changes take effect without reinstalling it.
 - `.[dev]` installs the current project plus development tools such as `pytest`.
 - `pytest -q` runs all tests and prints a compact result.
