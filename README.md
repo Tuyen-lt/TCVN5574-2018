@@ -116,31 +116,13 @@ Fonts: DejaVu Sans (found in Windows Fonts; otherwise copy the TTFs into `tcvn55
 
 ## Testing
 
-Do not create a virtualenv inside OneDrive; use a Python outside it (e.g. `py -3.13`) and install the project with its development extra:
+The library currently includes **112 automated tests** covering materials, beams, columns, walls, flexure, shear, torsion, serviceability, detailing, nonlinear analysis, batch processing and PDF reports. Results are cross-checked against TCVN 5574:2018 tables, published worked examples and independent numerical calculations.
+
+Run the test suite with:
 
 ```bash
 py -3.13 -m pip install -e ".[dev]"
 py -3.13 -m pytest -q
 ```
 
-Benchmarks:
-- Đoàn Thị Quỳnh Mai: VD 2.1–2.8 (flexure, T-section), 2.9–2.12 (nonlinear model), 4.4–4.9 (columns), 3.1–3.4 (shear), 5.7–5.9 (torsion), 6.1–6.5 (crack, curvature).
-- TCVN 5574:2018 tables (materials).
-- `02.RC BEAM TCVN 5574-2018.xlsm` (flexure) and `05. TINH CHIEU DAI NEO THEP THEO TCVN 5574-2018.xlsx` (anchorage).
-
-The `02.TIES BAR`, `02.TORSION BEAM` and `02.FLEXURALCRACK CONTROL` spreadsheets use TCVN 5574:2012
-formulas (φb2 = 2.0, φb3, φn, φw1·φb1, old Wpl) and are **not** used as references
-(except the hanging-stirrup rule $A = P/R_{sw}$).
-
-Where the book deviates from the code text, the library follows the code:
-- VD 5.9 checks $T \le T_0\sqrt{1-Q/Q_0}$; CT (115) is $T \le T_0(1-Q/Q_0)$. VD 5.9 also stops $C$ at the optimum in $[h_0; 2h_0]$; the library scans up to $3h_0$ (as VD 3.2).
-- VD 6.4 uses $I_{red} = bh^3/12$ without the steel terms of CT (189).
-- Chapter 4 ignores buckling for $l_0/h \le 8$ (TCVN 5574:2012); TCVN 5574:2018 8.1.2.1.2 uses $L_0/i \le 14$. The book takes $\varphi_L$ moments about $h/2$ instead of the tension bar ($h/2 - a$), ~1%. VD 4.8 uses approximate symmetric design formulas (783 mm² vs exact 719 mm²).
-- At high axial force (VD 4.9, N ≈ 0.77 N_ult) the nonlinear model gives ~11% less than the limit-force small-eccentricity formula CT (43) (confirmed by independent fibre integration).
-
-Concentric compression benchmarks: Đoàn Thị Quỳnh Mai VD 4.1 (954.05 kN), VD 4.2 (1176.5 mm²), Bùi Quốc Bảo (concrete alone), Lê Bá Huệ (short-term, net area, 1137.8 kN). No book contains a numerical biaxial example; the biaxial check is verified by an independent 2D grid integration, symmetry and the uniaxial limit.
-
-Simplifications (conservative):
-- Deflection uses the maximum-moment curvature over the whole span (VD 6.6 integrates uncracked end zones).
-- Shear check compares $Q$ at the support with $\min_C$; $q_1 = 0$ by default.
-- Nonlinear model: limit strain states per CT (70), (71), (86) — one-sign states use the reduced eps_b,u; checked against an independent fibre integration and the limit-force method (large eccentricity).
+> **Engineering disclaimer:** This library is provided for reference and calculation assistance only. A qualified structural engineer must independently review the inputs, assumptions and results and remains responsible for all final engineering decisions.
