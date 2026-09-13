@@ -23,15 +23,35 @@ Formulas follow the code text (clause / formula numbers noted in the source). Wo
 
 ## Quick start
 
-Requires Python 3.12 or newer. From the project directory, install once with:
+### 1. Requirements
+
+Install [Python 3.12 or newer](https://www.python.org/downloads/) and Git. Check that Python is available:
 
 ```bash
+python --version
+```
+
+On Windows, if `python` is not recognized, use `py -3.12` instead of `python` in the commands below.
+
+### 2. Install the library
+
+To install the released version directly from GitHub:
+
+```bash
+python -m pip install "tcvn5574 @ git+https://github.com/Tuyen-lt/TCVN5574-2018.git@v1.0.0"
+```
+
+Alternatively, clone the repository and install it from the downloaded folder:
+
+```bash
+git clone https://github.com/Tuyen-lt/TCVN5574-2018.git
+cd TCVN5574-2018
 python -m pip install .
 ```
 
-`pip` automatically installs `concreteproperties` and `fpdf2` when they are
-missing. For development and testing, use `python -m pip install -e ".[dev]"`.
-Importing `tcvn5574` itself never changes the active Python environment.
+The final dot (`.`) means “install the Python project in the current folder”. `pip` also installs required dependencies such as `concreteproperties` and `fpdf2` automatically.
+
+### 3. Basic usage
 
 ```python
 from tcvn5574 import *
@@ -121,8 +141,17 @@ The library currently includes **112 automated tests** covering materials, beams
 Run the test suite with:
 
 ```bash
-py -3.13 -m pip install -e ".[dev]"
-py -3.13 -m pytest -q
+git clone https://github.com/Tuyen-lt/TCVN5574-2018.git
+cd TCVN5574-2018
+python -m pip install -e ".[dev]"
+python -m pytest -q
 ```
+
+Command explanation:
+
+- `-e` installs the library in editable mode, so source-code changes take effect without reinstalling it.
+- `.[dev]` installs the current project plus development tools such as `pytest`.
+- `pytest -q` runs all tests and prints a compact result.
+- On Windows, `py -3.12 -m ...` may be used when the `python` command is unavailable.
 
 > **Engineering disclaimer:** This library is provided for reference and calculation assistance only. A qualified structural engineer must independently review the inputs, assumptions and results and remains responsible for all final engineering decisions.
